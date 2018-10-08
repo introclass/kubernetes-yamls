@@ -37,7 +37,7 @@ spec:
   ports:
   - name: webshell
     port: 80
-    targetPort: 8080
+    targetPort: 80
     protocol: TCP
   - name: ssh
     port: 22
