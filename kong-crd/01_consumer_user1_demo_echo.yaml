@@ -1,0 +1,82 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: user1
+  namespace: demo-echo
+username: echo-user1
+custom_id: echo-user1
+
+---
+
+apiVersion: configuration.konghq.com/v1
+kind: KongCredential
+metadata:
+  name: user1-basic-auth
+  namespace: demo-echo
+consumerRef: user1
+type: basic-auth
+config:
+  username: user1
+  password: "123456"
+
+---
+
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: user1-basic-auth
+  namespace: demo-echo
+disabled: false  # optional
+plugin: basic-auth
+config:
+  hide_credentials: true
+
+---
+
+apiVersion: configuration.konghq.com/v1
+kind: KongCredential
+metadata:
+  name: user1-key-auth
+  namespace: demo-echo
+consumerRef: user1
+type: key-auth
+config:
+  key: "123456"
+
+---
+
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: user1-key-auth
+  namespace: demo-echo
+disabled: false  # optional
+plugin: key-auth
+config:
+  hide_credentials: true
+
+---
+
+apiVersion: configuration.konghq.com/v1
+kind: KongCredential
+metadata:
+  name: user1-jwt-auth
+  namespace: demo-echo
+consumerRef: user1
+type: jwt
+config:  #如果设置，会使用默认配置，或者自动生成
+  algorithm: HS256
+  key: "a36c3049b36249a3c9f8891cb127243c"
+  secret: "e71829c351aa4242c2719cbfbe671c09"
+
+---
+
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: user1-jwt-auth
+  namespace: demo-echo
+disabled: false  # optional
+plugin: jwt
+config:
+  key_claim_name: "iss"
