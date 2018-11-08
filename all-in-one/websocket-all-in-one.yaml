@@ -1,0 +1,123 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: demo-websocket
+  generateName: demo-websocket
+  labels:
+    name: demo-websocket
+    purpose: Demonstration
+  annotations:
+    describe: Just show how to create
+status:
+  phase: ''
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: websocket-ingress
+  namespace: demo-websocket
+spec:
+  rules:
+  - host: websocket.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: websocket
+          servicePort: 80
+      - path: /echo
+        backend:
+          serviceName: websocket
+          servicePort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: websocket
+  namespace: demo-websocket
+spec:
+  type: ClusterIP
+  ports:
+  - name: websocket
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  - name: ssh
+    port: 22
+    targetPort: 22
+    protocol: TCP
+  selector:
+    app: websocket
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: websocket
+  namespace: demo-websocket
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: websocket
+  template:
+    metadata:
+      labels:
+        name: websocket
+        app: websocket
+    spec:
+      containers:
+      - name: websocket
+        image: lijiaocn/websocket:1.0
+        resources:
+          limits:
+            cpu: 3
+            memory: 128Mi
+          requests:
+            cpu: 0.1
+            memory: 32Mi
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        imagePullPolicy: Always
+        securityContext:
+          privileged: false
+          runAsNonRoot: false
+        stdin: false
+        stdinOnce: false
+        tty: false
+      - name: sshproxy
+        image: lijiaocn/sshproxy:1.0
+        env:
+        - name: ROOTPASS
+          value: '123456'
+        resources:
+          limits:
+            cpu: 3
+            memory: 128Mi
+          requests:
+            cpu: 0.1
+            memory: 32Mi
+        livenessProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        imagePullPolicy: Always
+        securityContext:
+          privileged: false
+          runAsNonRoot: false
+        stdin: false
+        stdinOnce: false
+        tty: false
+      restartPolicy: Always
+      dnsPolicy: Default
+      serviceAccountName: default
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false

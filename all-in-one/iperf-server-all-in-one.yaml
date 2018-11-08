@@ -1,0 +1,104 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: demo-iperf
+  generateName: demo-iperf
+  labels:
+    name: demo-iperf
+    purpose: "iperf_server"
+  annotations:
+    describe: "be used in API Gateway test"
+status:
+  phase: ''
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iperf-server
+  namespace: demo-iperf
+spec:
+  type: ClusterIP
+  ports:
+  - name: iperf-server
+    port: 5001
+    targetPort: 5001
+    protocol: TCP
+  - name: ssh
+    port: 22
+    targetPort: 22
+    protocol: TCP
+  selector:
+    app: iperf-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iperf-server
+  namespace: demo-iperf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iperf-server
+  template:
+    metadata:
+      labels:
+        name: iperf-server
+        app: iperf-server
+    spec:
+      containers:
+      - name: iperf-server
+        image: lijiaocn/iperf-server:1.0
+        resources:
+          limits:
+            cpu: 1
+            memory: 1024Mi
+          requests:
+            cpu: 0.1
+            memory: 512Mi
+        livenessProbe:
+          tcpSocket:
+            port: 5001
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+          runAsNonRoot: false
+        stdin: false
+        stdinOnce: false
+        tty: false
+      - name: sshproxy
+        image: lijiaocn/sshproxy:1.0
+        env:
+        - name: ROOTPASS
+          value: '123456'
+        resources:
+          limits:
+            cpu: 2
+            memory: 128Mi
+          requests:
+            cpu: 0.1
+            memory: 32Mi
+        livenessProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+          runAsNonRoot: false
+        stdin: false
+        stdinOnce: false
+        tty: false
+      restartPolicy: Always
+      dnsPolicy: Default
+      serviceAccountName: default
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false
