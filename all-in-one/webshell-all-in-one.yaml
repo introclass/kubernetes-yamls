@@ -50,13 +50,28 @@ spec:
   selector:
     app: webshell
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webshell-nodeport
+  namespace: demo-webshell
+spec:
+  type: NodePort
+  ports:
+  - name: webshell
+    port: 80
+    targetPort: 80
+    protocol: TCP
+  selector:
+    app: webshell
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: webshell
   namespace: demo-webshell
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: webshell
