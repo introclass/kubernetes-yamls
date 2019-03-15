@@ -565,7 +565,8 @@ metadata:
   name: kong-proxy
   namespace: kong
 spec:
-  type: LoadBalancer
+#  type: LoadBalancer
+  type: NodePort 
   ports:
   - name: kong-proxy
     port: 80

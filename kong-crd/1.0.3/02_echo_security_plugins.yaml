@@ -1,0 +1,44 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: echo-bot-detection
+  namespace: demo-echo
+disabled: false  # optional
+plugin: bot-detection
+config:
+#  whitelist:    #黑白名单是一组用“,”间隔的正则表达式，匹配的是User-Agent
+  blacklist: [curl/7.54.0]
+
+---
+
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: echo-cors
+  namespace: demo-echo
+disabled: false  # optional
+plugin: cors
+config:
+  origins: "*"        #用“,”间隔的一组域名或者PCRE正则，被添加到响应头的Access-Control-Allow-Origin字段
+  methods: GET,POST #用“,”间隔的HTTP方法，被添加到响应头的Access-Control-Allow-Methods字段
+#  headers:         #Access-Control-Allow-Headers
+#  exposed_headers: #Access-Control-Expose-Headers
+#  credentials:     #Access-Control-Allow-Credentials
+#  max_age:         #how long the results of the preflight request can be cached, in seconds 
+#  preflight_continue  # A boolean value that instructs the plugin to proxy the OPTIONS preflight request to the upstream service.
+
+
+---
+
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: echo-ip-restriction
+  namespace: demo-echo
+disabled: false  # optional
+plugin: ip-restriction
+config:
+#   whitelist:     #用“,”间隔的一组IP或者CIDR，黑名单和白名单只能选一
+  blacklist:
+    1.1.1.1
+#    192.168.33.1,192.168.33.12,172.16.129.1
