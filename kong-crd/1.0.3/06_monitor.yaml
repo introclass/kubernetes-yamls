@@ -1,0 +1,9 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: echo-prometheus
+  namespace: demo-echo
+  labels:
+    global: "false"
+disabled: false  # optional
+plugin: prometheus

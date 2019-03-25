@@ -1,0 +1,13 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: echo-req-rate-limit
+  namespace: demo-echo
+  labels:
+    global: "false"
+disabled: false  # optional
+plugin: rate-limiting
+config:
+  second: 1
+  limit_by: ip
+  policy: local  #local,cluster,redis

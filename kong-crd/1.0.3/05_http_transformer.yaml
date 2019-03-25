@@ -1,0 +1,13 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: echo-correlation-id
+  namespace: demo-echo
+  labels:
+    global: "false"
+disabled: false  # optional
+plugin: correlation-id
+config:
+  header_name: kong-correlation-id
+  generator: uuid#counter
+  echo_downstream: true

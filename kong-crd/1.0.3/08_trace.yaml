@@ -1,0 +1,12 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: echo-http-zipkin-trace
+  namespace: demo-echo
+  labels:
+    global: "false"
+enabled: true  # optional
+plugin: zipkin
+config:                            
+  http_endpoint: "http://10.10.173.203:9411/api/v2/spans"
+  sample_ratio: 1

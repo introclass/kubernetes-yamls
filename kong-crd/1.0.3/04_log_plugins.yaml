@@ -1,0 +1,25 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: echo-file-log
+  namespace: demo-echo
+  labels:
+    global: "false"
+disabled: false  # optional
+plugin: file-log
+config:
+  path: /tmp/req.log
+  reopen: true
+
+#apiVersion: configuration.konghq.com/v1
+#kind: KongPlugin
+#metadata:
+#  name: echo-http-log
+#  namespace: demo-echo
+#disabled: false  # optional
+#plugin: http-log
+#config:
+#  http_endpoint: 
+#  method: POST
+#  timeout: 10000
+#  keepalive: 60000

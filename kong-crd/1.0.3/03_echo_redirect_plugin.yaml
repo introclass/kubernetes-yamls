@@ -3,9 +3,11 @@ kind: KongPlugin
 metadata:
   name: echo-http-redirect
   namespace: demo-echo
+  labels:
+    global: "true"
 disabled: false  # optional
 plugin: http-redirect
 config:                            # 参照：http://nginx.org/en/docs/http/ngx_http_redirect_module.html#redirect
-  regex: "^/abc(.*)"               # nginx的正则表达式，匹配URI
+  regex: "^/123(.*)"               # nginx的正则表达式，匹配URI
   replace: "/redirect/$1"          # 可以使用捕获
   flag: "permanent"                # 当前只支持permanent(301)和redirect(302)

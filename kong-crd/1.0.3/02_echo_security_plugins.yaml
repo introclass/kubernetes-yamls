@@ -39,6 +39,5 @@ disabled: false  # optional
 plugin: ip-restriction
 config:
 #   whitelist:     #用“,”间隔的一组IP或者CIDR，黑名单和白名单只能选一
-  blacklist:
-    1.1.1.1
-#    192.168.33.1,192.168.33.12,172.16.129.1
+  blacklist: [1.1.1.1,10.255.3.1]
+#    [192.168.33.1,192.168.33.12,172.16.129.1]
