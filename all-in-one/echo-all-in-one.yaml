@@ -9,8 +9,6 @@ metadata:
     purpose: "API_Gateway_Test"
   annotations:
     describe: "be used in API Gateway test"
-status:
-  phase: ''
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -73,6 +71,16 @@ spec:
           requests:
             cpu: 0.1
             memory: 32Mi
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /ping
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 10
         livenessProbe:
           tcpSocket:
             port: 8080

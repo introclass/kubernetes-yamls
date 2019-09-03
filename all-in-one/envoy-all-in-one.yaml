@@ -1,0 +1,126 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: gateway-envoy
+  generateName: gateway
+  labels:
+    name: gateway-envoy
+    purpose: "gateway-envoy"
+  annotations:
+    describe: "gateway-envoy"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: envoy-v1
+  namespace: gateway-envoy
+data:
+  envoy.yaml: |
+    node: 
+      cluster: "dev-cluster"
+      id: "group1-v1.11.1"
+    #runtime:
+    #  symlink_root: /srv/runtime/current
+    #  subdirectory: envoy
+    #  override_subdirectory: envoy_override
+    watchdog: 
+      miss_timeout: 0.2s
+      megamiss_timeout: 1s
+      kill_timeout: 0s
+      multikill_timeout: 0s
+    flags_path: /etc/envoy/flags/
+    stats_flush_interval: 5s
+    stats_config: 
+      use_all_default_tags: true
+    stats_sinks: 
+      name: envoy.stat_sinks.hystrix
+      config: 
+        num_buckets: 10
+    admin:
+      access_log_path: /var/log/envoy/admin_access.log
+      profile_path: /var/log/envoy/envoy.prof
+      address:
+        socket_address:
+          protocol: TCP
+          address: 0.0.0.0
+          port_value: 9901
+    dynamic_resources:
+      ads_config:
+        api_type: GRPC
+        grpc_services:
+          envoy_grpc:
+            cluster_name: ads_cluster
+      cds_config: {ads: {}}
+      lds_config: {ads: {}}
+    static_resources:
+      clusters:
+      - name: ads_cluster
+        connect_timeout: 0.25s
+        type: STATIC
+        lb_policy: ROUND_ROBIN
+        http2_protocol_options: {}
+        load_assignment:
+          cluster_name: ads_cluster
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: 192.168.99.1
+                    port_value: 5678
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: envoy-v1.11.1
+  namespace: gateway-envoy
+spec:
+  selector:
+    matchLabels:
+      app: envoy-v1.11.1
+  template:
+    metadata:
+      labels:
+        app: envoy-v1.11.1
+    spec:
+      containers:
+      - name: nginx-ingress-controller
+        image: envoyproxy/envoy:v1.11.1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: loglevel
+          value: info
+        ports:
+        - containerPort: 9901
+          hostPort: 9901
+          name: admin
+          protocol: TCP
+        - containerPort: 8080
+          hostPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8443
+          hostPort: 8443
+          name: https
+          protocol: TCP
+        volumeMounts:
+        - name: envoy-v1-volume
+          mountPath: /etc/envoy
+        - name: admin-log-volume
+          mountPath: /var/log/envoy
+      volumes:
+      - name: admin-log-volume
+        hostPath:
+          path: /data/log/envoy
+          type: Directory
+      - name: envoy-v1-volume
+        configMap:
+          name: envoy-v1
+          items:
+          - key: envoy.yaml
+            path: envoy.yaml
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      nodeSelector:
+        applyinfo: gateway-envoy 
