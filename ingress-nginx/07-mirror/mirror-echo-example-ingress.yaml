@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-echo-with-mirror
+  annotations:
+    nginx.ingress.kubernetes.io/mirror-uri: "/echo"
+spec:
+  rules:
+  - host: mirror.echo.example 
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: echo
+          servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-echo-with-mirror-backend
+spec:
+  rules:
+  - host: mirror.echo.example 
+    http:
+      paths:
+      - path: /echo
+        backend:
+          serviceName: webshell
+          servicePort: 80

@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-echo-with-rewrite
+  annotations:
+    nginx.ingress.kubernetes.io/app-root: /app1
+spec:
+  rules:
+  - host: app-root.echo.example 
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: echo
+          servicePort: 80
+      - path: /abc
+        backend:
+          serviceName: echo
+          servicePort: 80

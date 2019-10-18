@@ -1,0 +1,72 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: github-oauth2-proxy
+  name: github-oauth2-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: github-oauth2-proxy
+  template:
+    metadata:
+      labels:
+        k8s-app: github-oauth2-proxy
+    spec:
+      containers:
+      - args:
+        - --provider=github
+        - --email-domain=*
+        - --upstream=file:///dev/null
+        - --http-address=0.0.0.0:4180
+        # Register a new application
+        # https://github.com/settings/applications/new
+        env:
+        - name: OAUTH2_PROXY_CLIENT_ID
+          value: 353670d0777c3f178fa0
+        - name: OAUTH2_PROXY_CLIENT_SECRET
+          value: a46bf5db3d2610b3878f04efaebfc3fe2afbe6b2
+        # docker run -ti --rm python:3-alpine python -c 'import secrets,base64; print(base64.b64encode(base64.b64encode(secrets.token_bytes(16))));'
+        - name: OAUTH2_PROXY_COOKIE_SECRET
+          value: dWJQL0pvN3NFY21UVVp3dGhUZHlpQT09
+        image: lijiaocn/oauth2_proxy:v4.0.0
+        imagePullPolicy: Always
+        name: github-oauth2-proxy
+        ports:
+        - containerPort: 4180
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    k8s-app: github-oauth2-proxy
+  name: github-oauth2-proxy
+spec:
+  ports:
+  - name: http
+    port: 4180
+    protocol: TCP
+    targetPort: 4180
+  selector:
+    k8s-app: github-oauth2-proxy
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: github-oauth2-proxy
+spec:
+  rules:
+  #- host: github-oauth2-proxy.example
+  - host: auth-oauth2-ext.echo.example
+    http:
+      paths:
+      - backend:
+          serviceName: github-oauth2-proxy
+          servicePort: 4180
+        path: /oauth2
+#  tls:
+#  - hosts:
+#    - __INGRESS_HOST__
+#    secretName: __INGRESS_SECRET__

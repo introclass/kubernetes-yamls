@@ -1,0 +1,19 @@
+kind: Service
+apiVersion: v1
+metadata:
+ name: external-github-oauth-proxy
+spec:
+ type: ClusterIP
+ ports:
+ - port: 4180 
+   targetPort: 4180
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+ name: external-github-oauth-proxy
+subsets:
+ - addresses:
+     - ip: 192.168.99.1 
+   ports:
+     - port: 4180 

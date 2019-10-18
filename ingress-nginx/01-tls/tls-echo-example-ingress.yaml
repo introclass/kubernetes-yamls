@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-echo-with-tls
+spec:
+  rules:
+  - host: tls.echo.example 
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: echo
+          servicePort: 80
+  tls:
+  - hosts:
+    - tls.echo.example
+    secretName: tls-echo-exmaple-secret

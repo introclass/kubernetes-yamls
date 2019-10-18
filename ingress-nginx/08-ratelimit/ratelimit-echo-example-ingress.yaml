@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-echo-with-ratelimit
+  annotations:
+    # 每个源 IP 可以建立最大连接数
+    nginx.ingress.kubernetes.io/limit-connections: 2
+    # 每个源 IP 每分钟最大请求次数
+    nginx.ingress.kubernetes.io/limit-rpm: "5"
+    # 每个源 IP 每秒最大请求次数
+    nginx.ingress.kubernetes.io/limit-rps: "1"
+spec:
+  rules:
+  - host: ratelimit.echo.example 
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: echo
+          servicePort: 80

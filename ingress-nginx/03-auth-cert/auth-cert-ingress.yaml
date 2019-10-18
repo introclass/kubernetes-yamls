@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-echo-with-auth-cert
+  annotations:
+    # Enable client certificate authentication
+    nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
+    # Create the secret containing the trusted ca certificates
+    nginx.ingress.kubernetes.io/auth-tls-secret: "demo-echo/ca-secret"
+    # Specify the verification depth in the client certificates chain
+    nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
+    # Specify an error page to be redirected to verification errors
+    nginx.ingress.kubernetes.io/auth-tls-error-page: "http://auth-cert.echo.example/error-cert.html"
+    # Specify if certificates are passed to upstream server
+    nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
+spec:
+  rules:
+  - host: auth-cert.echo.example 
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: echo
+          servicePort: 80
+  tls:
+  - hosts:
+    - auth-cert.echo.example
+    secretName: tls-secret

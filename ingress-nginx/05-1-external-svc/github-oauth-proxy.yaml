@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: github-oauth2-proxy
+spec:
+  rules:
+  - host: github-oauth2.example
+    http:
+      paths:
+      - backend:
+          serviceName: github-oauth2-proxy
+          servicePort: 4180
+        path: /
+#  tls:
+#  - hosts:
+#    - __INGRESS_HOST__
+#    secretName: __INGRESS_SECRET__

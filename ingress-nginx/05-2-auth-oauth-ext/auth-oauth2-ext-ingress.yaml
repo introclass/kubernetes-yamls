@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-echo-with-auth-oauth2-ext
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: "http://192.168.99.1:4180/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "https://auth-oauth2-ext.echo.example:30358/oauth2/start?rd=$escaped_request_uri"
+spec:
+  rules:
+  - host: auth-oauth2-ext.echo.example 
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: echo
+          servicePort: 80
+  tls:
+  - hosts:
+    - auth-oauth2-ext.echo.example 
+    secretName: secret/oauth2-tls-secret
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-echo-with-auth-oauth2-ext-proxy
+spec:
+  rules:
+  - host: auth-oauth2-ext.echo.example 
+    http:
+      paths:
+      - path: /oauth2
+        backend:
+          serviceName: external-github-oauth-proxy
+          servicePort: 4180
+  tls:
+  - hosts:
+    - auth-oauth2-ext.echo.example 
+    secretName: secret/oauth2-tls-secret

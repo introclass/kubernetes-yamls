@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-echo-with-auth-basic-ext
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: "https://httpbin.org/basic-auth/user1/passwd1"
+spec:
+  rules:
+  - host: auth-basic-ext.echo.example 
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: echo
+          servicePort: 80
