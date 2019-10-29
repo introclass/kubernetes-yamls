@@ -25,5 +25,5 @@ spec:
       paths:
       - path: /echo
         backend:
-          serviceName: webshell
+          serviceName: http-record
           servicePort: 80

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: webshell
+  name: http-record
   namespace: demo-echo
 spec:
 #  type: ClusterIP
@@ -16,27 +16,27 @@ spec:
     targetPort: 22
     protocol: TCP
   selector:
-    app: webshell
+    app: http-record
 ---
 apiVersion: apps/v1beta1  #1.8 v1beta1
 kind: Deployment
 metadata:
-  name: webshell
+  name: http-record
   namespace: demo-echo
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: webshell
+      app: http-record
   template:
     metadata:
       labels:
-        name: webshell
-        app: webshell
+        name: http-record
+        app: http-record
     spec:
       containers:
-      - name: webshell
-        image: lijiaocn/webshell:2.2.1
+      - name: http-record
+        image: lijiaocn/http-record:0.0.1
         resources:
           limits:
             cpu: 1

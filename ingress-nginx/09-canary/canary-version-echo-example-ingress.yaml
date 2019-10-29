@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-echo-with-canary-version
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-by-header: "version"
+    nginx.ingress.kubernetes.io/canary-by-header-value: "canary"
+    nginx.ingress.kubernetes.io/canary-by-cookie: "canary-cookie"
+    nginx.ingress.kubernetes.io/canary-weight: "50"
+spec:
+  rules:
+  - host: canary.echo.example 
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: http-record
+          servicePort: 80
