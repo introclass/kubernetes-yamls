@@ -17,6 +17,9 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
+  annotations:
+    # 使用原始的 uri
+    nginx.ingress.kubernetes.io/rewrite-target: $request_uri
   name: ingress-echo-with-mirror-backend
 spec:
   rules:
