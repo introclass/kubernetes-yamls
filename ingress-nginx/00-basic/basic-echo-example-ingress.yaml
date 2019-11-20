@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-echo-basic
+spec:
+  rules:
+  - host: basic.echo.example 
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: echo
+          servicePort: 80
+  - host: wenda.iqianzhan.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: echo
+          servicePort: 80
+  - host: jisuanqi.iqianzhan.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: http-record
+          servicePort: 80

@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-record
+  namespace: demo-echo
+spec:
+#  type: ClusterIP
+  type: NodePort
+  ports:
+  - name: echo
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  - name: ssh
+    port: 22
+    targetPort: 22
+    protocol: TCP
+  selector:
+    app: http-record
+---
+apiVersion: apps/v1beta1  #1.8 v1beta1
+kind: Deployment
+metadata:
+  name: http-record
+  namespace: demo-echo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-record
+  template:
+    metadata:
+      labels:
+        name: http-record
+        app: http-record
+    spec:
+      containers:
+      - name: http-record
+        image: lijiaocn/http-record:0.0.1
+        resources:
+          limits:
+            cpu: 1
+            memory: 64Mi
+          requests:
+            cpu: 0.1
+            memory: 32Mi
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+          runAsNonRoot: false
+        stdin: false
+        stdinOnce: false
+        tty: false
+      restartPolicy: Always
+      dnsPolicy: Default
+      serviceAccountName: default
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false

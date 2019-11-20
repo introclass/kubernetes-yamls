@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-echo-with-mirror2
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+        mirror /mirror334556; # 配置多次该项则可放大N倍流量
+        mirror /mirror334556; # 配置多次该项则可放大N倍流量
+    nginx.ingress.kubernetes.io/server-snippet: |
+        location = /mirror334556 {
+            internal;
+            #access_log off; # 关闭mirror请求日志
+            if ($mirror_echo_to_http_record) {
+                #set $proxy_host $host; # 是否更改 host
+                set $proxy_host $mirror_echo_to_http_record; # 是否更改 host
+                proxy_pass http://$mirror_echo_to_http_record$request_uri;
+            }
+        }
+spec:
+  rules:
+  - host: mirror2.echo.example 
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: echo
+          servicePort: 80
